@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clark's MST Root Practice</title>
+    <style>
+        :root {
+            --primary-color: #34495E;
+            --secondary-color: #3498DB;
+            --success-color: #2ECC71;
+            --warning-color: #F1C40F;
+            --danger-color: #E74C3C;
+            --bg-color: #ECF0F1;
+            --card-bg: #FFFFFF;
+            --text-color: #2C3E50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            max-width: 650px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            padding: 30px;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #E0E6ED;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+            color: var(--primary-color);
+        }
+
+        .toggle-btn {
+            background-color: #E0E6ED;
+            color: #47525E;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .toggle-btn:hover {
+            background-color: #BDC3C7;
+        }
+
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: #2980B9;
+        }
+
+        .btn:disabled {
+            background-color: #95A5A6;
+            cursor: not-allowed;
+        }
+
+        /* Student View Styles */
+        .info-box {
+            background-color: #EBF5FF;
+            border-left: 4px solid var(--secondary-color);
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .status-text {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #F8F9FA;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #E0E6ED;
+        }
+
+        .badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .question-box {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            background-color: #FDFEFE;
+            border: 2px solid #D5D8DC;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
+            text-align: left;
+            color: #333;
+        }
+
+        .option:hover:not(:disabled) {
+            border-color: var(--secondary-color);
+            background-color: #EBF5FB;
+        }
+
+        .option.correct {
+            border-color: var(--success-color);
+            background-color: #EAFAF1;
+            color: #1E8449;
+            font-weight: bold;
+        }
+
+        .option.wrong {
+            border-color: var(--danger-color);
+            background-color: #FDEDEC;
+            color: #922B21;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-size: 15px;
+            line-height: 1.5;
+            border-left: 4px solid;
+        }
+
+        .feedback.success {
+            background-color: #EAFAF1;
+            border-color: var(--success-color);
+        }
+
+        .feedback.error {
+            background-color: #FDEDEC;
+            border-color: var(--danger-color);
+        }
+
+        /* Teacher View Styles */
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #BDC3C7;
+            border-radius: 6px;
+            font-family: monospace;
+            resize: vertical;
+            box-sizing: border-box;
+            font-size: 13px;
+        }
+
+        .report-box {
+            margin-top: 20px;
+            background: #F8F9FA;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #E4E7EB;
+        }
+
+        .report-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #BDC3C7;
+            font-size: 14px;
+        }
+
+        .report-item:last-child {
+            border-bottom: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .code-box {
+            background: #2C3E50;
+            color: #ECF0F1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            word-wrap: break-word;
+            font-size: 13px;
+            margin: 20px 0;
+            user-select: all;
+        }
+        
+        .remediation-tag {
+            background-color: var(--warning-color);
+            color: #856404;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1 id="app-title">Hi, Clark! 👋</h1>
+        <button class="toggle-btn" onclick="toggleView()" id="toggle-btn">Teacher Portal</button>
+    </div>
+
+    <div id="student-view">
+        <div id="intro-screen">
+            <h2>Word Root Mastery (MST)</h2>
+            <div class="info-box">
+                <strong>How it works:</strong> We will test you on specific words based on 3 roots (loc, medi, grad). <br><br>
+                🚨 <strong>The Golden Rule:</strong> If you get a question wrong, the system will add <strong>2 extra practice questions</strong> specifically for that exact word to make sure you truly learn it.
+            </div>
+            <ul>
+                <li><strong>Module 1:</strong> loc (place)</li>
+                <li><strong>Module 2:</strong> medi (half, middle)</li>
+                <li><strong>Module 3:</strong> grad (step)</li>
+            </ul>
+            <button class="btn" onclick="startQuiz()">Start Module 1</button>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <div class="status-text" id="status-text">
+                <span id="root-status">Module: <b>loc</b></span>
+                <span class="badge" id="queue-status">Questions Left: 4</span>
+            </div>
+            
+            <div id="remediation-alert" class="remediation-tag hidden">🎯 Targeted Review Question</div>
+            
+            <div class="question-box" id="question-text">Question goes here?</div>
+            <div class="options" id="options-container">
+                </div>
+
+            <div id="feedback-box" class="feedback">
+                <strong id="feedback-title"></strong>
+                <div id="feedback-text"></div>
+            </div>
+
+            <button class="btn hidden" id="next-btn" onclick="nextQuestion()">Next Question</button>
+        </div>
+
+        <div id="completion-screen" class="hidden">
+            <h2 id="completion-title">🎉 Modules Complete!</h2>
+            <p id="completion-msg">You have successfully cleared all stages and remediation questions.</p>
+            <p>Please double-click the code below, copy it, and send it to your teacher:</p>
+            <div class="code-box" id="student-code"></div>
+        </div>
+    </div>
+
+    <div id="teacher-view" class="hidden">
+        <h2>Teacher Dashboard 👩‍🏫</h2>
+        <p>Paste the student's code below to see their Multistage Adaptive Testing (MST) report.</p>
+        <textarea id="teacher-input" placeholder="Paste the code block here..."></textarea>
+        <button class="btn" onclick="decodeReport()">Generate Report</button>
+
+        <div id="report-container" class="report-box hidden">
+            </div>
+    </div>
+</div>
+
+<script>
+    /* * MST DATA STRUCTURE: Segmented by Root -> Knowledge Point
+     * Ensures we can pinpoint exactly which concept to re-test.
+     */
+    const questionBank = {
+        loc: {
+            locate: [
+                { q: "I lost my phone at the park, and I can't ______ it anywhere.", options: ["locate", "local", "locale", "locally"], ans: "locate", exp: "verb: 'loc' + '-ate' = to find a place." },
+                { q: "The police used a map to ______ the stolen car.", options: ["locate", "locally", "local", "locale"], ans: "locate", exp: "verb: 'locate' means to find the exact place." },
+                { q: "Which word is a VERB that means 'to find the place of something'?", options: ["locate", "locale", "local", "locally"], ans: "locate", exp: "The suffix '-ate' means 'to make or act', forming a verb." },
+                { q: "We need to ______ the source of the strange noise in the house.", options: ["locate", "local", "locally", "locale"], ans: "locate", exp: "verb: locate means to discover the position of something." }
+            ],
+            locale: [
+                { q: "The beautiful beach is a popular ______ for summer weddings.", options: ["locale", "locate", "local", "locally"], ans: "locale", exp: "noun: 'loc' + '-ale' (place where) = a specific setting for an event." },
+                { q: "The author chose a small, quiet village as the ______ for his mystery story.", options: ["locale", "locate", "local", "locally"], ans: "locale", exp: "noun: A 'locale' is a place where a story happens." },
+                { q: "We are looking for a tropical ______ for our next family vacation.", options: ["locale", "locally", "locate", "local"], ans: "locale", exp: "noun: locale refers to a specific geographic setting." },
+                { q: "Which noun means 'a specific place where an event or story happens'?", options: ["locale", "local", "locate", "locally"], ans: "locale", exp: "suffix '-ale' means 'place where'." }
+            ],
+            local: [
+                { q: "We buy our fresh vegetables from a ______ farmer, not from another country.", options: ["local", "locale", "locate", "locally"], ans: "local", exp: "adjective: 'loc' + '-al' = related to a nearby place." },
+                { q: "The ______ news station only reports on things happening right here in our city.", options: ["local", "locally", "locale", "locate"], ans: "local", exp: "adjective modifying 'news'. Local means nearby." },
+                { q: "My sister goes to the ______ high school just down the street.", options: ["local", "locale", "locate", "locally"], ans: "local", exp: "adjective describing the high school nearby." },
+                { q: "Which adjective describes something that is nearby or in your area?", options: ["local", "locate", "locale", "locally"], ans: "local", exp: "The suffix '-al' means 'related to'." }
+            ],
+            locally: [
+                { q: "To help our town's economy, we should shop ______ instead of buying things online.", options: ["locally", "local", "locale", "locate"], ans: "locally", exp: "adverb: 'local' + '-ly' = doing something in the local area." },
+                { q: "This restaurant is famous because all its food is grown ______, right here in our town.", options: ["locally", "local", "locate", "locale"], ans: "locally", exp: "adverb describing HOW it is grown." },
+                { q: "The business is owned ______, not by a big national company.", options: ["locally", "local", "locale", "locate"], ans: "locally", exp: "adverb meaning within the local community." },
+                { q: "Which adverb means 'in the manner of a nearby place'?", options: ["locally", "local", "locate", "locale"], ans: "locally", exp: "The suffix '-ly' usually creates an adverb." }
+            ]
+        },
+        medi: {
+            mediator: [
+                { q: "When the brothers fought, their mom acted as a ______ to help them talk it out.", options: ["mediator", "median", "medium", "mediate"], ans: "mediator", exp: "noun (person): 'medi' + '-ator' = one who steps in the middle." },
+                { q: "A ______ is a person who steps in the middle of an argument to help both sides agree.", options: ["mediator", "mediate", "medium", "median"], ans: "mediator", exp: "suffix '-or' means 'one who'." },
+                { q: "The teacher acted as a ______ between the two angry friends.", options: ["mediator", "median", "mediate", "medium"], ans: "mediator", exp: "noun (person) who resolves a dispute." },
+                { q: "Which noun refers to a person who intervenes between two parties?", options: ["mediator", "medium", "median", "mediate"], ans: "mediator", exp: "mediator = one who acts in the middle." }
+            ],
+            median: [
+                { q: "In math, if you arrange the numbers 1, 3, and 5 in order, the number 3 is the ______.", options: ["median", "medium", "mediate", "mediator"], ans: "median", exp: "noun: The 'median' is the number exactly in the middle." },
+                { q: "The car crashed into the grassy ______ in the middle of the highway.", options: ["median", "mediator", "medium", "mediate"], ans: "median", exp: "noun: A median is a strip in the middle of a road." },
+                { q: "The concrete ______ separated the cars driving in opposite directions.", options: ["median", "medium", "mediate", "mediator"], ans: "median", exp: "noun: the middle divider on a street." },
+                { q: "Which noun means 'the middle value in a set of numbers'?", options: ["median", "mediator", "mediate", "medium"], ans: "median", exp: "median = the middle point." }
+            ],
+            medium: [
+                { q: "This shirt is too small, and that one is too large. I need a ______ size.", options: ["medium", "median", "mediate", "mediator"], ans: "medium", exp: "adjective/noun: halfway between small and large." },
+                { q: "I like my steak cooked ______, not too rare and not too well-done.", options: ["medium", "mediate", "median", "mediator"], ans: "medium", exp: "adjective: halfway between two extremes." },
+                { q: "The water temperature was ______, halfway between hot and cold.", options: ["medium", "median", "mediator", "mediate"], ans: "medium", exp: "adjective: meaning intermediate or middle." },
+                { q: "Which word describes something that is exactly halfway between two extremes?", options: ["medium", "median", "mediate", "mediator"], ans: "medium", exp: "suffix '-um' (belonging to the middle)." }
+            ],
+            mediate: [
+                { q: "The teacher had to ______ the argument so the students could be friends again.", options: ["mediate", "mediator", "medium", "median"], ans: "mediate", exp: "verb: 'medi' + '-ate' = to act in the middle." },
+                { q: "Which word is a VERB that means 'to step into a fight to help people agree'?", options: ["mediate", "mediator", "medium", "median"], ans: "mediate", exp: "To mediate is the action of helping." },
+                { q: "My mom had to ______ our fight over who got to use the TV.", options: ["mediate", "median", "medium", "mediator"], ans: "mediate", exp: "verb: meaning to intervene." },
+                { q: "I tried to ______ the disagreement between my two best friends.", options: ["mediate", "mediator", "median", "medium"], ans: "mediate", exp: "verb: taking action to solve a conflict." }
+            ]
+        },
+        grad: {
+            gradual: [
+                { q: "Learning a new language is a ______ process; it takes time step by step.", options: ["gradual", "graduate", "graduation", "gradient"], ans: "gradual", exp: "adjective: 'grad' + '-ual' = happening step by step." },
+                { q: "The change in weather from winter to spring is ______, getting a little warmer each day.", options: ["gradual", "gradient", "graduate", "graduation"], ans: "gradual", exp: "adjective: changing slowly in small steps." },
+                { q: "The water temperature made a ______ change, not suddenly getting hot.", options: ["gradual", "graduate", "gradient", "graduation"], ans: "gradual", exp: "adjective: progressing slowly." },
+                { q: "Which adjective means 'happening slowly or step by step'?", options: ["gradual", "graduation", "graduate", "gradient"], ans: "gradual", exp: "suffix '-ual' means related to a process." }
+            ],
+            graduate: [
+                { q: "After four years of hard work, my sister will ______ from high school next month.", options: ["graduate", "graduation", "gradual", "gradient"], ans: "graduate", exp: "verb: 'grad' + '-ate' = to finish the steps of school." },
+                { q: "A person who has finished all their classes and got a diploma is called a ______.", options: ["graduate", "graduation", "gradual", "gradient"], ans: "graduate", exp: "noun: someone who completed academic steps." },
+                { q: "My brother is a college ______ and is now looking for a job.", options: ["graduate", "gradual", "gradient", "graduation"], ans: "graduate", exp: "noun: a person who finished school." },
+                { q: "Which word acts as a VERB meaning 'to successfully complete school'?", options: ["graduate", "graduation", "gradient", "gradual"], ans: "graduate", exp: "graduate = to step up and finish." }
+            ],
+            graduation: [
+                { q: "We bought a nice gift for my cousin to celebrate his college ______ ceremony.", options: ["graduation", "graduate", "gradual", "gradient"], ans: "graduation", exp: "noun (event): 'grad' + '-uation' = action or process." },
+                { q: "Which word means the action or event of finishing school?", options: ["graduation", "graduate", "gradient", "gradual"], ans: "graduation", exp: "Graduation is the ceremony." },
+                { q: "The whole family came to the high school ______ to take pictures.", options: ["graduation", "gradual", "graduate", "gradient"], ans: "graduation", exp: "noun: the ceremony event." },
+                { q: "During ______, all the students wore black robes and threw their hats.", options: ["graduation", "graduate", "gradual", "gradient"], ans: "graduation", exp: "noun: the event of completing steps." }
+            ],
+            gradient: [
+                { q: "The hikers had trouble climbing the steep ______ of the mountain trail.", options: ["gradient", "gradual", "graduate", "graduation"], ans: "gradient", exp: "noun: a slope or a step up/down on a path." },
+                { q: "In art class, we painted a color ______ that slowly changed from light to dark.", options: ["gradient", "gradual", "graduate", "graduation"], ans: "gradient", exp: "noun: a step-by-step change in color." },
+                { q: "The road has a steep ______, making it hard for bikes to go up.", options: ["gradient", "graduation", "graduate", "gradual"], ans: "gradient", exp: "noun: degree of a slope." },
+                { q: "Which noun means 'a part of a road that slopes upward or downward'?", options: ["gradient", "gradual", "graduate", "graduation"], ans: "gradient", exp: "gradient = an inclined part." }
+            ]
+        }
+    };
+
+    // --- STATE VARIABLES ---
+    const rootOrder = ['loc', 'medi', 'grad'];
+    let currentRootIndex = 0;
+    
+    // Dynamic Queues for MST
+    let currentConceptBank = {}; 
+    let testQueue = []; // Holds questions to be asked
+    let currentQuestion = null;
+    let studentHistory = []; 
+
+    // --- UTILITY ---
+    function shuffleArray(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    function toggleView() {
+        const studentView = document.getElementById('student-view');
+        const teacherView = document.getElementById('teacher-view');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const title = document.getElementById('app-title');
+
+        if (studentView.classList.contains('hidden')) {
+            studentView.classList.remove('hidden');
+            teacherView.classList.add('hidden');
+            toggleBtn.innerText = "Teacher Portal";
+            title.innerText = "Hi, Clark! 👋";
+        } else {
+            studentView.classList.add('hidden');
+            teacherView.classList.remove('hidden');
+            toggleBtn.innerText = "Back to Student";
+            title.innerText = "MST Teacher Dashboard 👩‍🏫";
+        }
+    }
+
+    // --- STUDENT MST LOGIC ---
+    function startQuiz() {
+        document.getElementById('intro-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        currentRootIndex = 0;
+        studentHistory = [];
+        loadRootModule();
+        renderNextQuestion();
+    }
+
+    // Stage 1: Load Initial Routing Questions (1 per concept)
+    function loadRootModule() {
+        let root = rootOrder[currentRootIndex];
+        // Deep copy the concept bank for this root so we can safely pop()
+        currentConceptBank = JSON.parse(JSON.stringify(questionBank[root]));
+        testQueue = [];
+
+        // Pick 1 random question for each concept in the root
+        for (let concept in currentConceptBank) {
+            let questions = currentConceptBank[concept];
+            shuffleArray(questions);
+            let q = questions.pop(); // Remove from bank
+            testQueue.push({ root: root, concept: concept, isRemediation: false, ...q });
+        }
+        
+        shuffleArray(testQueue);
+    }
+
+    function renderNextQuestion() {
+        // Reset UI
+        document.getElementById('feedback-box').style.display = 'none';
+        document.getElementById('next-btn').classList.add('hidden');
+        document.getElementById('remediation-alert').classList.add('hidden');
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+
+        // MST Progression Check: If queue is empty, move to next Root
+        if (testQueue.length === 0) {
+            currentRootIndex++;
+            if (currentRootIndex >= rootOrder.length) {
+                finishQuiz(true);
+                return;
+            }
+            loadRootModule(); // Load Stage 1 for the new root
+        }
+
+        let root = rootOrder[currentRootIndex];
+        document.getElementById('root-status').innerHTML = `Module ${currentRootIndex + 1} of ${rootOrder.length} | Root: <b>${root}</b>`;
+        document.getElementById('queue-status').innerText = `Tasks in Queue: ${testQueue.length}`;
+        
+        // Pop next question from queue
+        currentQuestion = testQueue.shift();
+
+        // Show tag if it's a penalty/remediation question
+        if (currentQuestion.isRemediation) {
+            document.getElementById('remediation-alert').classList.remove('hidden');
+            document.getElementById('remediation-alert').innerText = `🎯 Targeted Review: ${currentQuestion.concept}`;
+        }
+
+        document.getElementById('question-text').innerText = currentQuestion.q;
+
+        // Render Options
+        let options = shuffleArray([...currentQuestion.options]);
+        options.forEach(opt => {
+            let btn = document.createElement('button');
+            btn.className = 'option';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(opt, btn);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedOpt, btnElement) {
+        const allBtns = document.querySelectorAll('.option');
+        allBtns.forEach(b => b.disabled = true);
+
+        let isCorrect = (selectedOpt === currentQuestion.ans);
+        let concept = currentQuestion.concept;
+
+        studentHistory.push({
+            r: currentQuestion.root,
+            c: concept,
+            q: currentQuestion.q,
+            a: selectedOpt,
+            correct: isCorrect,
+            remediation: currentQuestion.isRemediation
+        });
+
+        const feedbackBox = document.getElementById('feedback-box');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const feedbackText = document.getElementById('feedback-text');
+
+        feedbackBox.style.display = 'block';
+        feedbackBox.className = 'feedback ' + (isCorrect ? 'success' : 'error');
+
+        if (isCorrect) {
+            btnElement.classList.add('correct');
+            feedbackTitle.innerText = "✅ Correct!";
+            feedbackText.innerText = currentQuestion.exp;
+        } else {
+            btnElement.classList.add('wrong');
+            
+            // Highlight the correct one
+            allBtns.forEach(b => {
+                if(b.innerText === currentQuestion.ans) b.classList.add('correct');
+            });
+
+            // STAGE 2: MST REMEDIATION LOGIC (错一考二)
+            // Fetch up to 2 new questions for this specific concept
+            let availableQuestions = currentConceptBank[concept];
+            let addedCount = 0;
+            
+            while (addedCount < 2 && availableQuestions.length > 0) {
+                let newQ = availableQuestions.pop();
+                testQueue.push({ 
+                    root: currentQuestion.root, 
+                    concept: concept, 
+                    isRemediation: true, 
+                    ...newQ 
+                });
+                addedCount++;
+            }
+            
+            // Shuffle the queue so remediation questions mix in
+            shuffleArray(testQueue);
+            document.getElementById('queue-status').innerText = `Tasks in Queue: ${testQueue.length} (+${addedCount} Review)`;
+
+            feedbackTitle.innerText = `❌ Incorrect.`;
+            feedbackText.innerHTML = `${currentQuestion.exp} <br><br><strong>Note:</strong> You missed the concept <b>'${concept}'</b>. The system has added ${addedCount} targeted review question(s) to your path.`;
+            
+            if (addedCount === 0) {
+                 feedbackText.innerHTML += "<br><em>(No more review questions available for this specific word.)</em>";
+            }
+        }
+
+        document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+        renderNextQuestion();
+    }
+
+    function finishQuiz(isSuccess) {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('completion-screen').classList.remove('hidden');
+        
+        const title = document.getElementById('completion-title');
+        const msg = document.getElementById('completion-msg');
+
+        if (isSuccess) {
+            title.innerText = "🎉 All Modules Cleared!";
+            msg.innerHTML = "You have successfully passed the routing tests and all targeted reviews.<br><br>Please double-click the code below, copy it, and send it to your teacher:";
+        }
+
+        const jsonStr = JSON.stringify(studentHistory);
+        const encoded = btoa(encodeURIComponent(jsonStr));
+        document.getElementById('student-code').innerText = encoded;
+    }
+
+    // --- TEACHER LOGIC ---
+    function decodeReport() {
+        const input = document.getElementById('teacher-input').value.trim();
+        const container = document.getElementById('report-container');
+        container.innerHTML = '';
+        container.classList.remove('hidden');
+
+        if (!input) {
+            container.innerHTML = '<span style="color:red;">Please paste a code first.</span>';
+            return;
+        }
+
+        try {
+            const decodedStr = decodeURIComponent(atob(input));
+            const history = JSON.parse(decodedStr);
+
+            if (!Array.isArray(history)) throw new Error("Invalid format");
+
+            let totalQ = history.length;
+            let correctQ = history.filter(h => h.correct).length;
+            let accuracy = Math.round((correctQ / totalQ) * 100);
+
+            // Analysis
+            let conceptIssues = {};
+            history.forEach(h => {
+                if(!h.correct && !h.remediation) {
+                    conceptIssues[h.c] = (conceptIssues[h.c] || 0) + 1;
+                }
+            });
+
+            let issuesList = Object.keys(conceptIssues).length > 0 
+                ? Object.keys(conceptIssues).map(c => `<li>Triggered Remediation for: <strong>${c}</strong></li>`).join('')
+                : "<li>Clean Run! No remediation triggered.</li>";
+
+            let summaryHTML = `
+                <h3>📊 MST Diagnostic Report</h3>
+                <p><strong>Total Questions Answered:</strong> ${totalQ} (Base + Remediation)</p>
+                <p><strong>Overall Accuracy:</strong> ${accuracy}%</p>
+                <h4>Learning Path Analysis:</h4>
+                <ul>${issuesList}</ul>
+                <hr>
+                <h3>📝 Detailed Path Log</h3>
+            `;
+
+            let detailsHTML = history.map((h, i) => `
+                <div class="report-item">
+                    <strong>Q${i+1} [Root: ${h.r} | Concept: ${h.c}]</strong> 
+                    ${h.remediation ? '<span style="color:#E67E22; font-size:12px; font-weight:bold;">(Remediation)</span>' : ''}<br>
+                    ${h.q}<br>
+                    Student Selected: <span style="color: ${h.correct ? '#27AE60' : '#E74C3C'}; font-weight:bold;">${h.a}</span> ${h.correct ? '✅' : '❌'}
+                </div>
+            `).join('');
+
+            container.innerHTML = summaryHTML + detailsHTML;
+
+        } catch (e) {
+            container.innerHTML = '<span style="color:red;">❌ Invalid Code. Make sure you copied the whole block of text.</span>';
+        }
+    }
+</script>
+
+</body>
+</html>
